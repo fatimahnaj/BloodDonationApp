@@ -28,10 +28,27 @@
         </div>
     </header>
     <div class="card">
-        <form method="POST" action="{{url_for('create_event')}}">
+        <form method="POST">
             <h1>Blood donation event</h1>
-            <h3>Create a new event for a blood donation drive event within Malaysia.</h3>
-            <button type="submit">Create event</button>
+            <div class="card-top">
+                <label for="event-name">Event name : </h3>
+                <input type="text" name="event-name">
+            </div>
+            <div class="card-body">
+                <div class="body-left">
+                    <label for="description">Description : </label>
+                    <input type="text" id="description" name="description">
+                    <label for="date">Date :</label> <br>
+                    <input type="text" id="date" placeholder="dd/mm/yy">
+                </div>
+                <div class="body-right">
+                    <label for="event-name">Location : </label>
+                    <input type="text" id="location" name="location">
+                    <label for="slot">Available slots :</label> <br>
+                    <input type="number" id="slot">
+                </div>
+            </div>
+            <button type="submit">Create</button>
         </form>
     </div>
 </body>
@@ -104,32 +121,58 @@ body{
 }
 
 .card{
-    place-items: center;
-    position: relative;
-    z-index: 3;
-    width: 350px;
-    margin: 0 20px;
-    padding: 25px 30px 44px;
+    width: 70%;
+    padding: 0px 40px 20px;
     border-radius: 1.25rem;
     background: #fff;
-    text-align: center;
 }
+
+.card-body{
+    display: flex;
+}
+
+.body-left{
+    margin-right: 18%;
+}
+
 
 .card h1{
     color: #752f27;
-    font-size: 20px;
+    font-size: 40px;
 }
 
-.card h3{
-    margin: 0px 15px 70px 15px;
+.card label{
     color: #d4bea9;
     font-size: 15px;
     text-align: left;
     letter-spacing: 0.5px;
 }
 
+.card input{
+    width: 100%;
+    height: 50px;
+    border: 2px solid #ebebeb;
+    font-family: inherit;
+    font-size: 15px;
+    padding: 0 16px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border-color: #d79f92;
+    transition: all 0.375s;
+    margin-bottom: 15px;
+}
+
+
+#description,#location{
+    height: 100px;
+}
+
+#date,#slot{
+    width: 120px;
+}
+
 .card button{
-    width: 80%;
+    width: 100%;
     height: 40px;
     border-radius: 0.6rem;
     border-width: 1.15px;
