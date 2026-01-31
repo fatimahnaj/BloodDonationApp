@@ -1,5 +1,6 @@
 *{
     box-sizing: border-box;
+    font-family: 'Poppins';
 }
 
 html, body, .wrapper{
@@ -7,12 +8,16 @@ html, body, .wrapper{
 }
 
 body{
+    margin: 0;
+    background-color: #752f27;
+}
+
+body#login{
     display: flex;
+    flex-direction: row;
     place-items: center;
     margin: 0;
     padding: 0 24px;
-    background-color: #752f27;
-    font-family: 'Poppins';
 }
 
 .logo{
@@ -95,4 +100,38 @@ button#login:hover{
 button#create_acc:hover{
     background-color: #b19a84;
     transition: all 0.475s;
+}
+
+.navbar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    height: 100px;
+    padding: 20px;
+    background-color: #752f27;
+    transition: 0.3s;
+}
+
+.navbar-header img{
+    height: 50px;
+}
+
+.navbar-header a{
+    color:#fff;
+    font-size: 50px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.navbar button{
+    background: transparent;
+    border: none;
+}
+
+.navbar i{
+    font-size: 50px;
 }
