@@ -32,13 +32,13 @@
             <button type="submit" id="login">Log in</button>
             <a href="#">forgot password?</a>
             <hr>
-            <button type="button" id="create_acc">Create new account</button>
+              <button type="button" id="create_acc" onclick="window.location.href='{{url_for('register')}}'">Create new account</button>
         </form>
     </div>
 </body>
 
 <style>
-  *{
+*{
     box-sizing: border-box;
     font-family: 'Poppins';
 }
@@ -89,7 +89,7 @@ body#login{
     from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
 .login-card{
     position: relative;
     z-index: 3;
