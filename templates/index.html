@@ -32,13 +32,13 @@
             <button type="submit" id="login">Log in</button>
             <a href="#">forgot password?</a>
             <hr>
-            <button type="button" id="create_acc">Create new account</button>
+              <button type="button" id="create_acc" onclick="window.location.href='{{url_for('register')}}'">Create new account</button>
         </form>
     </div>
 </body>
 
 <style>
-  *{
+*{
     box-sizing: border-box;
     font-family: 'Poppins';
 }
@@ -89,7 +89,7 @@ body#login{
     from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
 .login-card{
     position: relative;
     z-index: 3;
@@ -161,40 +161,6 @@ button#login:hover{
 button#create_acc:hover{
     background-color: #b19a84;
     transition: all 0.475s;
-}
-
-.navbar{
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    width: 100%;
-    height: 100px;
-    padding: 20px;
-    background-color: #752f27;
-    transition: 0.3s;
-}
-
-.navbar-header img{
-    height: 50px;
-}
-
-.navbar-header a{
-    color:#fff;
-    font-size: 50px;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.navbar button{
-    background: transparent;
-    border: none;
-}
-
-.navbar i{
-    font-size: 50px;
 }
 
 </style>

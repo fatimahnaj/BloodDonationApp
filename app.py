@@ -58,9 +58,19 @@ def login():
             return redirect(url_for('login')) #refresh the login fx
     return render_template('index.html') #initialise the screen
 
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+#EVENT ORGANISER
 @app.route('/event-org')
 def event_org():
-    return "event page"
+        return render_template('event-org.html') #initialise the screen
+
+@app.route('/create-event', methods=['GET','POST'])
+def create_event():
+    return render_template('create-event.html')
+
 
 
 #INIT 

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <title>Blood</title>
+</head>
+<body id="event-org">
+    <header>
+        <div class="navbar">
+            <div class="navbar-header">
+                    <img src="/static/logo-heart.png" class="logo-img">
+                    <a href="event-org.html">Blood</a>
+            </div>
+    
+            <div class="right-navbar">
+                <h1>User: xxx</h1>
+                <button>
+                    <span>
+                        <i class='bx bx-log-out bx-flip-horizontal' style='color:#ffffff'  ></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <div class="card">
+        <form method="POST">
+            <h1>Blood donation event</h1>
+            <div class="card-top">
+                <label for="event-name">Event name : </h3>
+                <input type="text" name="event-name">
+            </div>
+            <div class="card-body">
+                <div class="body-left">
+                    <label for="description">Description : </label>
+                    <input type="text" id="description" name="description">
+                    <label for="date">Date :</label> <br>
+                    <input type="text" id="date" placeholder="dd/mm/yy">
+                </div>
+                <div class="body-right">
+                    <label for="event-name">Location : </label>
+                    <input type="text" id="location" name="location">
+                    <label for="slot">Available slots :</label> <br>
+                    <input type="number" id="slot">
+                </div>
+            </div>
+            <button type="submit">Create</button>
+        </form>
+    </div>
+</body>
+
+<style>
+*{
+    box-sizing: border-box;
+    font-family: 'Poppins';
+}
+
+html, body, .wrapper{
+    height: 100%;
+}
+
+body{
+    margin: 0;
+    background-color: #752f27;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+}
+
+.navbar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    height: 100px;
+    padding: 15px 20px;
+    background-color: #752f27;
+    transition: 0.3s;
+}
+
+.navbar-header img{
+    height: 50px;
+}
+
+.navbar-header a{
+    color:#fff;
+    font-size: 50px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.navbar button{
+    background: transparent;
+    border: none;
+}
+
+.navbar h1{
+    color:#fff;
+    margin-top: 15px;
+}
+
+.navbar i{
+    margin-left: 20px;
+    font-size: 50px;
+}
+
+.right-navbar{
+    display: flex;
+    flex-direction: row;
+}
+
+.right-navbar:last-child{
+    margin-left: auto;
+}
+
+.card{
+    width: 70%;
+    padding: 0px 40px 20px;
+    border-radius: 1.25rem;
+    background: #fff;
+}
+
+.card-body{
+    display: flex;
+}
+
+.body-left{
+    margin-right: 18%;
+}
+
+
+.card h1{
+    color: #752f27;
+    font-size: 40px;
+}
+
+.card label{
+    color: #d4bea9;
+    font-size: 15px;
+    text-align: left;
+    letter-spacing: 0.5px;
+}
+
+.card input{
+    width: 100%;
+    height: 50px;
+    border: 2px solid #ebebeb;
+    font-family: inherit;
+    font-size: 15px;
+    padding: 0 16px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border-color: #d79f92;
+    transition: all 0.375s;
+    margin-bottom: 15px;
+}
+
+
+#description,#location{
+    height: 100px;
+}
+
+#date,#slot{
+    width: 120px;
+}
+
+.card button{
+    width: 100%;
+    height: 40px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border: none;
+    color: #fff;
+    background-color: #880105;
+    font-size: large;
+    font-weight: bold;
+}
+
+.card button:hover{
+    color: #e4e0e0;
+    background-color: #5f0003;
+    transition: all 0.475s;
+}
+
+</style>
+</html>
