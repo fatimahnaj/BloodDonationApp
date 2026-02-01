@@ -28,7 +28,7 @@ def init_user_db():
 
 #=====================PAGES======================
 #LOGIN 
-@app.route('/', methods=['GET','POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
     checking(f"[LOGIN SCREEN]")
     if request.method == 'POST': #request the method. POST = button clicked

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <title>Blood</title>
+</head>
+<body>
+    <div class="card">
+      <form method="post">
+        <h1>Event organizer registration</h1>
+        <input type="text" placeholder="email address"> <br>
+        <input type="text" placeholder="company name"> <br>
+        <input type="text" placeholder="password"> <br>
+        <input type="text" placeholder="contact number"> <br>
+        <button type="submit">Register</button>
+      </form>
+    </div>
+</body>
+<style>
+*{
+    box-sizing: border-box;
+    font-family: 'Poppins';
+}
+
+html, body, .wrapper{
+    height: 100%;
+}
+
+body{
+    margin: 0;
+    background-color: #752f27;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+}
+.card{
+    width: 40%;
+    padding: 0px 40px 20px;
+    border-radius: 1.25rem;
+    background: #fff;
+    text-align: center;
+    padding: 30px;
+    margin: 30px 20px;
+}
+.card h1{
+    text-align: left;
+    font-size: 25px;
+    color: #d79f92;
+    text-decoration-line: underline;
+    margin-left: 20px;
+    margin-bottom: 30px;
+}
+.card input{
+    width: 90%;
+    height: 65px;
+    border: 2px solid #ebebeb;
+    font-family: inherit;
+    font-size: 15px;
+    padding: 0 16px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border-color: #d79f92;
+    transition: all 0.375s;
+    margin-bottom: 30px;
+}
+.card button{
+    width: 30%;
+    height: 40px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border: none;
+    color: #fff;
+    background-color: #d4bea9;
+    font-size: large;
+    font-weight: bold;
+}
+
+.card button:hover{
+    background-color: #ab9480;
+    transition: all 0.475s;
+}
+</style>
+</html>
