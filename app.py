@@ -71,7 +71,20 @@ def event_org():
 def create_event():
     return render_template('create-event.html')
 
+#HOSPITAL
+@app.route('/hospital')
+def hospital():
+    return render_template('hospital.html')
 
+
+@app.route('/update-inv', methods=['GET','POST'])
+def update_inventory():
+    return render_template('update-inv.html')
+
+
+@app.route('/request', methods=['GET','POST'])
+def send_request():
+    return render_template('request.html')
 
 #INIT 
 if __name__ == '__main__':

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <title>Blood</title>
+</head>
+<body id="hospital">
+    <header>
+        <div class="navbar">
+            <div class="navbar-header">
+                    <img src="/static/logo-heart.png" class="logo-img">
+                    <a href="hospital">Blood</a>
+            </div>
+    
+            <div class="right-navbar">
+                <h1>User: xxx</h1>
+                <button>
+                    <span>
+                        <i class='bx bx-log-out bx-flip-horizontal' style='color:#ffffff'  ></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="card">
+        <form method="POST" action="{{url_for('update_inventory')}}">
+            <div class="card-content">
+                <h1>Blood inventory</h1>
+            </div> 
+
+            <div class="card-desc">
+                <h3>View internal blood inventory. Update and manage data.</h3>
+            </div>
+            
+            <div class="card-action">
+                <button type="submit">Update data</button>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="card">
+        <form method="POST" action="{{url_for('send_request')}}">
+            <div class="card-content">
+                <h1>Trigger urgent blood request</h1>
+            </div>
+            <div class="card-desc">
+                <h3>Send a request for any urgent blood emergency. Required to fill a form.</h3>
+            </div>
+
+            <div class="card-action">
+                <button type="submit">Send request</button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+
+<style>
+*{
+    box-sizing: border-box;
+    font-family: 'Poppins';
+}
+
+html, body, .wrapper{
+    height: 100%;
+}
+
+body{
+    margin: 0;
+    background-color: #752f27;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+}
+
+.navbar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    height: 100px;
+    padding: 15px 20px;
+    background-color: #752f27;
+    transition: 0.3s;
+}
+
+.navbar-header img{
+    height: 50px;
+}
+
+.navbar-header a{
+    color:#fff;
+    font-size: 50px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.navbar button{
+    background: transparent;
+    border: none;
+}
+
+.navbar h1{
+    color:#fff;
+    margin-top: 15px;
+}
+
+.navbar i{
+    margin-left: 20px;
+    font-size: 50px;
+}
+
+.right-navbar{
+    display: flex;
+    flex-direction: row;
+}
+
+.right-navbar:last-child{
+    margin-left: auto;
+}
+
+.card{
+    place-items: center;
+    position: relative;
+    z-index: 3;
+    height: 320px;
+    width: 30%;
+    margin: 0 20px;
+    padding: 25px 30px 44px;
+    border-radius: 1.25rem;
+    background: #fff;
+    text-align: center;
+}
+
+.card h1{
+    color: #752f27;
+    font-size: 20px;
+}
+
+.card h3{
+    margin: 0px 15px 70px 15px;
+    color: #d4bea9;
+    font-size: 15px;
+    text-align: left;
+    letter-spacing: 0.5px;
+}
+
+.card button{
+    width: 80%;
+    height: 40px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border: none;
+    color: #fff;
+    background-color: #880105;
+    font-size: large;
+    font-weight: bold;
+}
+
+.card button:hover{
+    color: #e4e0e0;
+    background-color: #5f0003;
+    transition: all 0.475s;
+}
+
+.card form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-content {
+    height: 140px;
+}
+
+.card-desc {
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10%;
+}
+
+.card-action {
+    height: 60px;
+}
+
+</style>
+</html>
