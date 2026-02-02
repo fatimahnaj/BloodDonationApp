@@ -50,6 +50,7 @@ def login():
         #if the data is found in the database, we SAVE their ID in the sessions(cookies)
         if user:
             session['username'] = user['name']
+            session['ID'] = user['userID']
             
             # Role-Based Redirection Logic, send actors to their pages
             if user['role'] == 'Donor':
@@ -230,8 +231,8 @@ def donor_profile():
     #check session to make sure only logged in donors can see this
     if 'username' not in session:
         return redirect(url_for('login'))
-        
-    user_id = session['username']
+    
+    user_id = session['ID']
     db = get_db()
 
     # If the user clicks edit to update their donor profile
