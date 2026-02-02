@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Blood | Feedback</title>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-header">
+            <img src="/static/logo-heart.png" class="logo-img">
+            <a href="{{ url_for('donor_dashboard') }}">Blood | Feedback</a>
+        </div>
+        <div class="right-nav">
+            <h1>User: {{ session['username'] }}</h1>
+            
+            <div class="notif-wrapper" style="position: relative; display: flex; align-items: center;">
+                <i class='bx bxs-bell bell-icon' onclick="toggleNotif()"></i>
+                <div id="notif-box" class="notif-dropdown">
+                    <div class="notif-header">Notification</div>
+                    {# loops through a list called notifications for urgent blood request #}
+                    {% for n in notifications %}
+                        <div class="notif-item">Urgent request from {{ n.hospitalName }}</div>
+                    {% endfor %}
+                    {% if not notifications %}
+                        <div class="notif-item">No new notifications</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <a href="{{ url_for('donor_dashboard') }}"><i class='bx bx-user-circle' style="color:white"></i></a>
+            <a href="{{ url_for('login') }}" class="nav-link"><i class='bx bx-log-out'></i></a>
+        </div>
+    </div>
+
+    <div class="feedback-box">
+        <h2>Event Feedback</h2> <p>Help us improve the Blood Donation experience</p>
+        
+        {the input field for the feedback form}
+        <form method="POST">
+            <div class="form-group">
+                <label>Rating (1-5):</label>
+                <input type="number" name="rating" min="1" max="5" required placeholder="5">
+            </div>
+            <div class="form-group">
+                <label>Comment:</label>
+                <textarea name="comment" rows="4" placeholder="Share your suggestions..."></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Submit Feedback</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleNotif() {
+            var box = document.getElementById('notif-box');
+            box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+</body>
+
+<style>
+    * { box-sizing: border-box; }
+    body { 
+        background: #752f27; 
+        font-family: 'Poppins'; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        min-height: 100vh; 
+        margin: 0; 
+    }
+
+    .navbar {
+        position: fixed; top: 0; width: 100%; height: 90px;
+        background: #752f27; display: flex; justify-content: space-between;
+        align-items: center; padding: 0 80px; z-index: 1000;
+    }
+    .navbar-header { display: flex; align-items: center; gap: 12px; }
+    .navbar-header img { height: 50px; }
+    .navbar-header a { color: white; font-size: 35px; text-decoration: none; font-weight: 700; }
+
+    .right-nav { display: flex; align-items: center; gap: 25px; color: white; }
+    .right-nav h1 { font-size: 20px; font-weight: 700; margin: 0; }
+    .right-nav i { font-size: 35px !important; cursor: pointer; color: white !important; }
+
+    /* for notification dropdown */
+    .notif-dropdown { 
+        display: none; position: absolute; top: 50px; right: 0; 
+        background: white; width: 300px; border-radius: 8px; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 1100; 
+    }
+    .notif-header { padding: 10px; color: #752f27; font-weight: bold; border-bottom: 1px solid #ddd; }
+    .notif-item { padding: 10px; color: #555; font-size: 13px; border-bottom: 1px solid #eee; text-align: left;}
+
+    /* for feedback card*/
+    .feedback-box { 
+        background: #f4e8e1; 
+        width: 500px; 
+        padding: 40px; 
+        border-radius: 20px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        margin-top: 140px; 
+        text-align: center;
+    }
+    
+    h2 { color: #752f27; font-weight: 800; margin: 0; }
+    p { color: #752f27; margin-bottom: 20px; font-size: 14px; }
+
+    .form-group { text-align: left; margin-top: 20px; }
+    label { color: #752f27; font-weight: bold; display: block; margin-bottom: 5px; }
+    
+    input, textarea { 
+        width: 100%; padding: 12px; 
+        border: 1.15px solid #d79f92; 
+        border-radius: 10px; 
+        background: white;
+        font-family: 'Poppins';
+    }
+
+    .btn-submit { 
+        background: #880105; 
+        color: white; 
+        border: none; 
+        width: 100%; 
+        padding: 15px; 
+        border-radius: 10px; 
+        font-weight: bold; 
+        font-size: 16px;
+        margin-top: 25px; 
+        cursor: pointer; 
+        transition: 0.3s;
+    }
+    .btn-submit:hover { background: #5f0003; }
+</style>
+</html>
