@@ -11,23 +11,11 @@ app.secret_key = 'mmu_blood_donation_key'
 def checking(output):
     print("-> " + output)
 
-#KIV : later setup database kat sini
-def get_db_connection(db_name='database.db'):
-    conn = sqlite3.connect(db_name)
+#DATABASE
+def get_db():
+    conn = sqlite3.connect("database.db")
     conn.row_factory = sqlite3.Row
     return conn
-
-def init_user_db():
-    conn = get_db_connection('user.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS user (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL
-                )''')
-    conn.commit()
-    conn.close()
-
 #=====================PAGES======================
 #LOGIN 
 @app.route('/', methods=['GET','POST'])
@@ -38,11 +26,11 @@ def login():
         password_val = request.form['password'].strip()
 
         #KIV : setup database for users here
-        # conn = get_db_connection('user.db')
+        # conn = get_db('user.db')
         # c = conn.cursor()
         # c.execute("SELECT * FROM user WHERE username=? AND password=?", (username, password))
         # user = c.fetchone()
-        db = get_db_connection()
+        db = get_db()
         #select the 'role' along with other user data
         user = db.execute("SELECT * FROM RegisteredUser WHERE email=? AND password=?", 
                           (email_val, password_val)).fetchone()
@@ -92,17 +80,55 @@ def reg_donor():
          email = request.form['email']
          password = request.form['password']
          contactNum = request.form['contactnum']
+         gender = request.form.get('gender')
+         dateOfBirth = request.form.get('dateOfBirth')
+         bloodType = request.form.get('bloodType')
+         rhFactor = request.form.get('rhFactor')
 
-         checking(f"Donor name : {name} ")
-         checking(f"Email : {email} ")
-         checking(f"Password : {password} ")
-         checking(f"Contact number : {contactNum} ")
+        #make sure all details are entered
+         if not name or not email or not password:
+            flash("⚠️ Please fill in all fields.", "error")
+            return redirect(url_for('reg_donor'))
+         
+         #save new registered user
+         conn = get_db()
+         c = conn.cursor()
+         c.execute("SELECT * FROM RegisteredUser WHERE email = ?", (email,))
+         if c.fetchone():
+            conn.close()
+            flash("❌ Email already exists. Please choose another.", "error")
+            return redirect(url_for('reg_donor'))
 
-         submit = True
-         if submit:
+         try:
+              # Insert into RegisteredUser table
+              c.execute("INSERT INTO RegisteredUser (name, email, password, role) VALUES (?, ?, ?, ?)", 
+                       (name, email, password, 'Donor'))
+              conn.commit()
+              
+              # Get the userID of the newly inserted user
+              user_id = c.lastrowid
+              
+              # Insert into Donor table with additional details
+              c.execute("INSERT INTO Donor (gender, bloodType, rhFactor, contactNum, dateOfBirth) VALUES (?, ?, ?, ?, ?)", 
+                       (gender, bloodType, rhFactor, contactNum, dateOfBirth))
+              conn.commit()
+              
+              checking(f"Donor name : {name} ")
+              checking(f"Email : {email} ")
+              checking(f"Password : {password} ")
+              checking(f"Contact number : {contactNum} ")
+              checking(f"Blood type : {bloodType}{rhFactor}")
+              
+              flash("✅ Registration successful! Please log in.", "success")
               return redirect(url_for('login'))
-         else:
+         except Exception as e:
+              conn.rollback()
+              checking(f"Error: {e}")
+              flash("❌ Registration failed. Please try again.", "error")
               return redirect(url_for('reg_donor'))
+         finally:
+              conn.close()
+              
     return render_template('register-donor.html')
 
 @app.route('/register-eventorg', methods=['GET','POST'])
@@ -185,7 +211,7 @@ def donor_dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
     
-    db = get_db_connection()
+    db = get_db()
     #for view events, ONLY fetch events if 'Approved'by admin
     events = db.execute("SELECT * FROM DonationEvent WHERE status = 'Approved'").fetchall()
 
@@ -206,7 +232,7 @@ def donor_profile():
         return redirect(url_for('login'))
         
     user_id = session['username']
-    db = get_db_connection()
+    db = get_db()
 
     # If the user clicks edit to update their donor profile
     if request.method == 'POST':
@@ -254,7 +280,7 @@ def feedback():
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    db = get_db_connection()
+    db = get_db()
     user_id = session['username']  
 
     if request.method == 'POST':
@@ -292,7 +318,7 @@ def book_event(eventID):
     appointment_id = "AP" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    db = get_db_connection()
+    db = get_db()
     
     #validation for donor book appointment
     try:
