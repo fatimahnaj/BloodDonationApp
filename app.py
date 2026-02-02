@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3, os
 import datetime
+import uuid
 
 app = Flask(__name__)
 app.secret_key = 'our_secret_key'
@@ -13,7 +14,7 @@ def checking(output):
 
 #KIV : later setup database kat sini
 def get_db_connection(db_name='database.db'):
-    conn = sqlite3.connect(db_name)
+    conn = sqlite3.connect(db_name, timeout=10, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -160,14 +161,85 @@ def create_event():
 def hospital():
     return render_template('hospital.html')
 
-
 @app.route('/update-inv', methods=['GET','POST'])
 def update_inventory():
-    return render_template('update-inv.html')
 
+    if request.method == 'POST':
+        try:
+            db = get_db_connection()
+
+            user_id = session.get('username', 'HOSP01')
+
+            blood_types = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
+
+            for t in blood_types:
+                qty = request.form.get(t.replace("+", "_pos").replace("-", "_neg"))
+
+                if qty is None or qty == "":
+                    qty = 0
+
+                inventory_id = f"INV_{user_id}_{t}"
+
+                db.execute("""
+                    INSERT INTO BloodInventory (inventoryID, userID, bloodType, currentStock)
+                    VALUES (?, ?, ?, ?)
+                    ON CONFLICT(inventoryID)
+                    DO UPDATE SET currentStock=excluded.currentStock
+                """, (inventory_id, user_id, t, qty))
+
+            db.commit()
+            flash("Inventory updated successfully!", "success")
+
+        except Exception as e:
+            print("ERROR:", e)
+            flash(str(e), "error")
+
+        finally:
+            db.close()
+
+        return redirect(url_for('update_inventory'))
+
+    return render_template('update-inv.html')
 
 @app.route('/request', methods=['GET','POST'])
 def send_request():
+
+    if request.method == 'POST':
+
+        blood = request.form.get('blood_type')  # Returns None if nothing is selected
+        rh = request.form.get('rh')
+        urgency = request.form.get('urgency')
+
+        if not blood or not rh or not urgency:
+            flash("Please fill in all fields.", "error")
+            return redirect(url_for('send_request'))
+
+
+        rhesus = 1 if rh == '+' else 0
+
+        level = {
+            "normal": 1,
+            "high": 2,
+            "critical": 3
+        }[urgency]
+
+        requestID = "REQ_" + str(uuid.uuid4())[:8]
+        hospitalID = session.get("username")
+
+        conn = get_db_connection()
+
+        conn.execute("""
+            INSERT INTO UrgentRequest
+            (requestID, userID, requiredBloodType, RhesusFactor, urgencyLevel)
+            VALUES (?, ?, ?, ?, ?)
+        """, (requestID, hospitalID, blood, rhesus, level))
+
+        conn.commit()
+        conn.close()
+
+        flash("Urgent request sent!", "success")
+        return redirect(url_for('hospital'))
+
     return render_template('request.html')
 
 #DONOR 

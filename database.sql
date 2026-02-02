@@ -94,6 +94,9 @@ CREATE TABLE BloodInventory (
     FOREIGN KEY (userID) REFERENCES Hospital(userID)
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_inventory
+ON BloodInventory(inventoryID);
+
 CREATE TABLE UrgentRequest (
     requestID VARCHAR(20) NOT NULL,
     userID VARCHAR(20) NOT NULL, -- Links to Hospital 
