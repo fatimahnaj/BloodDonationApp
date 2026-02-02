@@ -101,34 +101,44 @@ def reg_donor():
             return redirect(url_for('reg_donor'))
 
          try:
-              # Insert into RegisteredUser table
-              c.execute("INSERT INTO RegisteredUser (name, email, password, role) VALUES (?, ?, ?, ?)", 
-                       (name, email, password, 'Donor'))
-              conn.commit()
+            # Generate new userID with format D### (D101, D102, etc.)
+            # Use numeric MAX on the numeric suffix to avoid lexicographic ordering and mixed prefixes
+            c.execute("SELECT MAX(CAST(SUBSTR(userID, 2) AS INTEGER)) FROM RegisteredUser WHERE userID LIKE 'D%'")
+            row = c.fetchone()
+            max_num = row[0] if row else None
+
+            if max_num and isinstance(max_num, int) and max_num >= 0:
+                new_num = max_num + 1
+            else:
+                # If no D-prefixed IDs exist or parsing fails, start at 101
+                new_num = 101
+
+            user_id = f"D{new_num}"
+
+            # Insert into RegisteredUser table with userID
+            c.execute("INSERT INTO RegisteredUser (userID, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
+                    (user_id, name, email, password, 'Donor'))
+            # Insert into Donor table
+            c.execute("INSERT INTO Donor (userID, gender, bloodType, rhFactor, contactNum, dateOfBirth) VALUES (?, ?, ?, ?, ?, ?)",
+                    (user_id, gender, bloodType, rhFactor, contactNum, dateOfBirth))
+            conn.commit()
               
-              # Get the userID of the newly inserted user
-              user_id = c.lastrowid
+            checking(f"Donor name : {name} ")
+            checking(f"Email : {email} ")
+            checking(f"Password : {password} ")
+            checking(f"Contact number : {contactNum} ")
+            checking(f"Blood type : {bloodType}{rhFactor}")
+            checking(f"User ID assigned : {user_id}")
               
-              # Insert into Donor table with additional details
-              c.execute("INSERT INTO Donor (gender, bloodType, rhFactor, contactNum, dateOfBirth) VALUES (?, ?, ?, ?, ?)", 
-                       (gender, bloodType, rhFactor, contactNum, dateOfBirth))
-              conn.commit()
-              
-              checking(f"Donor name : {name} ")
-              checking(f"Email : {email} ")
-              checking(f"Password : {password} ")
-              checking(f"Contact number : {contactNum} ")
-              checking(f"Blood type : {bloodType}{rhFactor}")
-              
-              flash("✅ Registration successful! Please log in.", "success")
-              return redirect(url_for('login'))
+            flash("✅ Registration successful! Please log in.", "success")
+            return redirect(url_for('login'))
          except Exception as e:
-              conn.rollback()
-              checking(f"Error: {e}")
-              flash("❌ Registration failed. Please try again.", "error")
-              return redirect(url_for('reg_donor'))
+            conn.rollback()
+            checking(f"Error: {e}")
+            flash("❌ Registration failed. Please try again.", "error")
+            return redirect(url_for('reg_donor'))
          finally:
-              conn.close()
+            conn.close()
               
     return render_template('register-donor.html')
 
