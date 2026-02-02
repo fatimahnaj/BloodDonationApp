@@ -84,7 +84,11 @@ def reg_donor():
          gender = request.form.get('gender')
          dateOfBirth = request.form.get('dateOfBirth')
          bloodType = request.form.get('bloodType')
-         rhFactor = request.form.get('rhFactor')
+         temp_rhFactor = request.form.get('rhFactor')
+         if temp_rhFactor=="pos":
+             rhFactor = True
+         else:
+             rhFactor = False
 
         #make sure all details are entered
          if not name or not email or not password:
@@ -155,11 +159,51 @@ def reg_eventorg():
          checking(f"Password : {password} ")
          checking(f"Contact number : {contactNum} ")
 
-         submit = True
-         if submit:
-              return redirect(url_for('login'))
-         else:
-              return redirect(url_for('reg_eventorg'))
+        #make sure all details are entered
+         if not name or not email or not password:
+            flash("⚠️ Please fill in all fields.", "error")
+            return redirect(url_for('reg_donor'))
+         
+         #save new registered user
+         conn = get_db()
+         c = conn.cursor()
+         c.execute("SELECT * FROM RegisteredUser WHERE email = ?", (email,))
+         if c.fetchone():
+            conn.close()
+            flash("❌ Email already exists. Please choose another.", "error")
+            return redirect(url_for('reg_donor'))
+
+         try:
+            # Generate new userID with format D### (D101, D102, etc.)
+            # Use numeric MAX on the numeric suffix to avoid lexicographic ordering and mixed prefixes
+            c.execute("SELECT MAX(CAST(SUBSTR(userID, 2) AS INTEGER)) FROM RegisteredUser WHERE userID LIKE 'EO%'")
+            row = c.fetchone()
+            max_num = row[0] if row else None
+
+            if max_num and isinstance(max_num, int) and max_num >= 0:
+                new_num = max_num + 1
+            else:
+                # If no EO-prefixed IDs exist or parsing fails, start at 1
+                new_num = 1
+
+            user_id = f"EO{new_num}"
+
+            # Insert into RegisteredUser table with userID
+            c.execute("INSERT INTO RegisteredUser (userID, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
+                    (user_id, name, email, password, 'EO'))
+            c.execute("INSERT INTO EventOrganiser (userID, companyName, contactNum) VALUES (?, ?, ?)",
+                    (user_id, name, contactNum))
+            conn.commit()
+              
+            flash("✅ Registration successful! Please log in.", "success")
+            return redirect(url_for('login'))
+         except Exception as e:
+            conn.rollback()
+            checking(f"Error: {e}")
+            flash("❌ Registration failed. Please try again.", "error")
+            return redirect(url_for('reg_eventorg'))
+         finally:
+            conn.close()
     return render_template('register-eventorg.html')
 
 #FORGOT PASSWORD
