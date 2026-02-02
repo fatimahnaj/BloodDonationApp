@@ -58,6 +58,7 @@ def login():
             return redirect(url_for('login')) #refresh the login fx
     return render_template('index.html') #initialise the screen
 
+#REGISTRATION
 @app.route('/register')
 def register():
     return render_template('register.html')
@@ -101,6 +102,11 @@ def reg_eventorg():
          else:
               return redirect(url_for('reg_eventorg'))
     return render_template('register-eventorg.html')
+
+#FORGOT PASSWORD
+@app.route('/forgot-pass', methods=['GET','POST'])
+def forgot_pass():
+    return render_template('forgot-pass.html')
 
 #EVENT ORGANISER
 @app.route('/event-org')
