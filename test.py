@@ -34,7 +34,7 @@ def init_user_db():
 def login():
     checking(f"[LOGIN SCREEN]")
     if request.method == 'POST': #request the method. POST = button clicked
-        email_val = request.form['email'].strip() #request from form,of the name 'username' #strip removes unnecessary space
+        username_val = request.form['username'].strip() #request from form,of the name 'username' #strip removes unnecessary space
         password_val = request.form['password'].strip()
 
         #KIV : setup database for users here
@@ -44,8 +44,8 @@ def login():
         # user = c.fetchone()
         db = get_db_connection()
         #select the 'role' along with other user data
-        user = db.execute("SELECT * FROM RegisteredUser WHERE email=? AND password=?", 
-                          (email_val, password_val)).fetchone()
+        user = db.execute("SELECT * FROM RegisteredUser WHERE userID=? AND password=?", 
+                          (username_val, password_val)).fetchone()
         db.close()
 
         #temporary for testing only
@@ -61,7 +61,7 @@ def login():
 
         #if the data is found in the database, we SAVE their ID in the sessions(cookies)
         if user:
-            session['username'] = user['name']
+            session['username'] = user['userID']
             
             # Role-Based Redirection Logic, send actors to their pages
             if user['role'] == 'Donor':
@@ -75,7 +75,7 @@ def login():
                 return redirect(url_for('event_org'))
         else:
             #if user credentials is invalid
-            flash("Invalid email or password. Please try again.", "error") #print out error on screen
+            flash("Invalid username or password. Please try again.", "error") #print out error on screen
             checking(f"Credentials unmatched. Try again.")
             return redirect(url_for('login')) #refresh the login fx
     return render_template('index.html') #initialise the screen

@@ -27,7 +27,7 @@
           {% endif %}
         {% endwith %}
         <form method="POST" action="{{url_for('login')}}"class="login-form">
-            <input type="text" name="username" placeholder="username">
+            <input type="text" name="email" placeholder="email address">
             <input type="password" name="password" placeholder="password">
             <button type="submit" id="login">Log in</button>
             <a href="{{url_for('forgot_pass')}}">forgot password?</a>
