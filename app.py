@@ -225,20 +225,47 @@ def create_event():
         location = request.form['location']
         availableSlots = request.form['slot']
 
+        #make sure all details are entered
+        if not eventName or not eventDate or not location or not availableSlots:
+            flash("⚠️ Please fill in all fields.", "error")
+            return redirect(url_for('create_event'))
+        
         checking(f"Event name : {eventName} ")
         checking(f"Description : {description}")
         checking(f"Date : {eventDate}")
         checking(f"Location : {location}")
         checking(f"Available slots : {availableSlots}")
 
-        triggered = True
-        if triggered:
-                flash("Event created! Pending admin's approval..","success")
-                return redirect(url_for('create_event'))
-        else:
-                flash("Not triggered","error")
-                return redirect(url_for('create_event'))
 
+        conn = get_db()
+        c = conn.cursor()
+
+        # Generate auto-incrementing eventID with format EV_test# (EV_test1, EV_test2, etc.)
+        c.execute("SELECT MAX(CAST(SUBSTR(eventID, 8) AS INTEGER)) FROM DonationEvent WHERE eventID LIKE 'EV_%'")
+        row = c.fetchone()
+        max_num = row[0] if row else None
+
+        if max_num and isinstance(max_num, int) and max_num >= 0:
+            new_num = max_num + 1
+        else:
+            # If no EV_test-prefixed IDs exist, start at 1
+            new_num = 1
+
+        event_id = f"EV_test{new_num}"
+        try:
+            c.execute("INSERT INTO DonationEvent (eventID,eventName,eventDate,eventLocation,description,userID,availableSlots,status) VALUES (?,?,?,?,?,?,?,?)",
+                      (event_id,eventName,eventDate,location,description,session['ID'],availableSlots,'pending'))
+            conn.commit()
+            flash("Event created! Pending admin's approval..","success")
+            return redirect(url_for('create_event'))
+        except Exception as e:
+            conn.rollback()
+            checking(f"Error: {e}")
+
+            flash("Not triggered","error")
+            return redirect(url_for('create_event'))
+        finally:
+            conn.close()
 
     return render_template('create-event.html')
 
