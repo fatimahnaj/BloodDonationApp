@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <title>Blood</title>
+</head>
+<body id="event-org">
+    <div class="card">
+        <h1>Create new account</h1> <hr>
+        <form method="GET" action="{{url_for('reg_donor')}}">
+            <button type="submit">Register as Donor</button>
+        </form>
+            <h6>OR</h6>
+        <form method="GET" action="{{url_for('reg_eventorg')}}">
+            <button type="submit">Register as Event Organiser</button>
+        </form>
+    </div>
+</body>
+
+<style>
+*{
+    box-sizing: border-box;
+    font-family: 'Poppins';
+}
+
+html, body, .wrapper{
+    height: 100%;
+}
+
+body{
+    margin: 0;
+    background-color: #752f27;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+}
+
+.card{
+    place-items: center;
+    position: relative;
+    z-index: 3;
+    width: 350px;
+    margin: 0 20px;
+    padding: 25px 30px 44px;
+    border-radius: 1.25rem;
+    background: #fff;
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+.card h1{
+    color: #752f27;
+    font-size: 20px;
+}
+
+button{
+    width: 250px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border: none;
+    color: #fff;
+    background-color: #880105;
+    font-size: large;
+    font-weight: bold;
+    line-height: 0.9;
+    padding: 15px;
+}
+
+button:hover{
+    color: #e4e0e0;
+    background-color: #5f0003;
+    transition: all 0.475s;
+}
+
+</style>
+</html>

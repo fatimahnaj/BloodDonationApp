@@ -18,7 +18,7 @@
             </div>
     
             <div class="right-navbar">
-                <h1>User: xxx</h1>
+                <h1>User: {{ session['username'] }}</h1>
                 <button>
                     <span>
                         <i class='bx bx-log-out bx-flip-horizontal' style='color:#ffffff'  ></i>
@@ -28,7 +28,7 @@
         </div>
     </header>
     <div class="card">
-        <form method="POST" action="{{url_for('create_event')}}">
+        <form method="GET" action="{{url_for('create_event')}}">
             <h1>Blood donation event</h1>
             <h3>Create a new event for a blood donation drive event within Malaysia.</h3>
             <button type="submit">Create event</button>
