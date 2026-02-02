@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Blood | Dashboard</title>
+
+</head>
+{# flash messages,pop-up alerts notification sent from app.py (example: "Booking Successful!") #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container" style="margin-top: 110px; padding: 0 50px;">
+        {% for category, message in messages %}
+          <div class="alert" style="padding: 15px; background-color: #f4e8e1; color: #752f27; border-left: 8px solid #880105; border-radius: 5px; font-weight: bold; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <i class='bx bx-info-circle'></i> {{ message }}
+          </div>
+        {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<body>
+    <div class="navbar">
+        <div class="navbar-header">
+            <img src="/static/logo-heart.png" class="logo-img"><a href="donor-dashboard.html">Blood | Dashboard</a>
+        </div>
+        <div class="right-nav">
+            <h1>User: {{ session['username'] }}</h1>
+            <i class='bx bxs-bell' onclick="toggleNotif()"></i>
+            <div id="notif-box" class="notif-dropdown">
+                <div class="notif-header">Notification</div>
+                {# loops through notifications list sent from the database through app.py #}
+                {% for n in notifications %}
+                    <div class="notif-item">Urgent request from {{ n.hospitalName }}</div>
+                {% endfor %}
+            </div>
+            <a href="{{ url_for('donor_profile') }}"><i class='bx bx-user-circle' style="color:white"></i></a>
+            <a href="{{ url_for('login') }}"><i class='bx bx-log-out' style="color:white"></i></a>
+        </div>
+    </div>
+
+    <div class="hero">
+        <h1>Blood donation event</h1>
+        <p>Locate the nearest event and start becoming part of the community</p>
+        <a href="#events" class="hero-btn">View events</a>
+    </div>
+
+    <div id="events" class="main-content">
+        {#loops, itcreates one card for every "Approved" event found in the database #}
+        {% for event in events %}
+        <div class="event-card">
+            <div class="card-top">
+                <h2>{{ event.eventName }}</h2> <div class="line"></div>
+                <p class="event-desc">{{ event.description }}</p>
+            </div>
+
+            <div class="card-middle">
+                <p><i class='bx bx-map-pin'></i> {{ event.eventLocation }}</p>
+                <p><i class='bx bx-calendar'></i> {{ event.eventDate }}</p>
+                <p>Remaining slot: {{ event.availableSlots }} available</p> 
+            </div>
+    
+            <div class="card-bottom">
+            {# booking and feedback logic, Shows "Book Appointment" if there is still slots, otherwise shows "Give Feedback" #}
+            {% if event.availableSlots > 0 %}
+                <form method="POST" action="{{ url_for('book_event', eventID=event.eventID) }}">
+                <button type="submit" class="btn-book">Book appointment</button>
+                </form>
+                {% else %}
+                    <a href="{{ url_for('feedback', event_id=event.eventID) }}">Give Feedback</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+    <script>
+        function toggleNotif() {
+            var box = document.getElementById('notif-box');
+            // If it's hidden, show it. If it's visible, hide it.
+            box.style.display = (box.style.display == 'block') ? 'none' : 'block';
+        }
+    </script>
+</body>
+<style>
+*{ box-sizing: border-box; font-family: 'Poppins'; }
+body { margin: 0; background-color: #752f27; scroll-behavior: smooth; }
+        
+.navbar {
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    height: 90px;
+    background: #752f27; 
+    display: flex; 
+    justify-content: space-between;
+    align-items: center; 
+    padding: 0 80px; 
+    z-index: 1000;
+}
+
+.navbar-header a { 
+    color: white !important; 
+            font-size: 35px;
+            text-decoration: none; 
+            font-weight: 700; 
+            font-family: 'Poppins', sans-serif;
+            align-items: center;
+            gap: 10px;
+}
+
+.right-nav i { 
+    font-size: 35px !important;
+    cursor: pointer; 
+    color: white !important;
+    transition: 0.3s;
+    vertical-align: middle;
+}
+
+.right-nav h1 { 
+    font-size: 20px; 
+    font-weight: 700 !important;
+    color: white !important;
+    margin: 0;
+    align-items: center;
+
+}
+
+
+.nav-icons { 
+    display: flex; 
+    gap: 300px;
+    flex-direction: row;
+    height: 100%;
+}
+
+.nav-icons i { 
+    font-size: 400px !important; 
+    cursor: pointer; 
+    color: white;
+    transition: 0.3s; 
+}
+
+.nav-icons i:hover { 
+    color: #d4bea9; 
+}
+
+/*Notification Dropdown*/
+.notif-dropdown { display: none; position: absolute; top: 70px; right: 120px; background: white; width: 300px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 10; }
+.notif-header { padding: 10px; color: #752f27; font-weight: bold; border-bottom: 1px solid #ddd; }
+.notif-item { padding: 10px; color: #555; font-size: 13px; }
+
+/* Hero - the large area at the top of a webpage*/
+.hero { height: 450px; margin-top: 90px; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1615461066841-6116ecaaba7f?q=80&w=2000'); background-size: cover; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
+.hero h1 { font-size: 55px; margin: 0; }
+.hero-btn { margin-top: 20px; padding: 10px 30px; border: 2px solid #d4bea9; color: #d4bea9; text-decoration: none; border-radius: 5px; }
+
+/* Cards */
+.main-content { padding: 50px; display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+.event-card { background: #f4e8e1; width: 320px; border-radius: 20px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; }
+.event-card h2 { color: #752f27; text-align: center; border-bottom: 2px solid #752f27; padding-bottom: 10px; }
+.btn-book { background: #880105; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.btn-feedback { background: #e8c6bc; color: white; display: block; text-align: center; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: bold; }
+</style>
+</html>
