@@ -30,22 +30,22 @@ def init_user_db():
 
 #=====================PAGES======================
 #LOGIN 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/', methods=['GET','POST'])
 def login():
     checking(f"[LOGIN SCREEN]")
     if request.method == 'POST': #request the method. POST = button clicked
-        username = request.form['username'].strip() #request from form,of the name 'username' #strip removes unnecessary space
-        password = request.form['password'].strip()
+        username_val = request.form['username'].strip() #request from form,of the name 'username' #strip removes unnecessary space
+        password_val = request.form['password'].strip()
 
         #KIV : setup database for users here
         # conn = get_db_connection('user.db')
         # c = conn.cursor()
         # c.execute("SELECT * FROM user WHERE username=? AND password=?", (username, password))
         # user = c.fetchone()
-        db = get_db_connection('database.db')
+        db = get_db_connection()
         #select the 'role' along with other user data
         user = db.execute("SELECT * FROM RegisteredUser WHERE userID=? AND password=?", 
-                          (username, password)).fetchone()
+                          (username_val, password_val)).fetchone()
         db.close()
 
         #temporary for testing only
@@ -84,6 +84,46 @@ def login():
 def register():
     return render_template('register.html')
 
+@app.route('/register-donor', methods=['GET','POST'])
+def reg_donor():
+    if request.method=='POST':
+         name = request.form['name']
+         email = request.form['email']
+         password = request.form['password']
+         contactNum = request.form['contactnum']
+
+         checking(f"Donor name : {name} ")
+         checking(f"Email : {email} ")
+         checking(f"Password : {password} ")
+         checking(f"Contact number : {contactNum} ")
+
+         submit = True
+         if submit:
+              return redirect(url_for('login'))
+         else:
+              return redirect(url_for('reg_donor'))
+    return render_template('register-donor.html')
+
+@app.route('/register-eventorg', methods=['GET','POST'])
+def reg_eventorg():
+    if request.method=='POST':
+         name = request.form['name']
+         email = request.form['email']
+         password = request.form['password']
+         contactNum = request.form['contactnum']
+
+         checking(f"Organizer name : {name} ")
+         checking(f"Email : {email} ")
+         checking(f"Password : {password} ")
+         checking(f"Contact number : {contactNum} ")
+
+         submit = True
+         if submit:
+              return redirect(url_for('login'))
+         else:
+              return redirect(url_for('reg_eventorg'))
+    return render_template('register-eventorg.html')
+
 #EVENT ORGANISER
 @app.route('/event-org')
 def event_org():
@@ -91,6 +131,28 @@ def event_org():
 
 @app.route('/create-event', methods=['GET','POST'])
 def create_event():
+    if request.method == 'POST':
+        eventName = request.form['event-name']
+        description = request.form['description']
+        eventDate = request.form['date']
+        location = request.form['location']
+        availableSlots = request.form['slot']
+
+        checking(f"Event name : {eventName} ")
+        checking(f"Description : {description}")
+        checking(f"Date : {eventDate}")
+        checking(f"Location : {location}")
+        checking(f"Available slots : {availableSlots}")
+
+        triggered = True
+        if triggered:
+                flash("Event created! Pending admin's approval..","success")
+                return redirect(url_for('create_event'))
+        else:
+                flash("Not triggered","error")
+                return redirect(url_for('create_event'))
+
+
     return render_template('create-event.html')
 
 #HOSPITAL
@@ -117,7 +179,7 @@ def donor_dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
     
-    db = get_db_connection('database.db')
+    db = get_db_connection()
     #for view events, ONLY fetch events if 'Approved'by admin
     events = db.execute("SELECT * FROM DonationEvent WHERE status = 'Approved'").fetchall()
 
@@ -195,7 +257,7 @@ def feedback():
             rating = request.form.get('rating')
             comment = request.form.get('comment')
 
-            db.execute('''INSERT INTO Feedback (feedbackID, userID, eventID, rating, comment) 
+            db.execute('''INSERT INTO Feedback (userID, rating, comment) 
                           VALUES (?, ?, ?, ?, ?)''', 
                        (user_id, rating, comment))
             db.commit()
