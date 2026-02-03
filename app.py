@@ -526,8 +526,12 @@ def admin_dashboard():
     donor_count = conn.execute('SELECT COUNT(DISTINCT userID) FROM Appointment').fetchone()[0] or 0
     
     # Metric: Identify top-performing event based on ratings 
-    top_event_row = conn.execute('SELECT eventName FROM DonationEvent ORDER BY status DESC LIMIT 1').fetchone()
-    top_event_name = top_event_row[0] if top_event_row else "N/A"
+    top_event_row = conn.execute(''' SELECT de.eventName, AVG(f.rating) AS avg_rating FROM DonationEvent de JOIN Feedback f ON de.eventID = f.eventID
+    GROUP BY de.eventID ORDER BY avg_rating DESC LIMIT 1 ''').fetchone()
+
+top_event_name = top_event_row[0] if top_event_row else "N/A"
+top_event_rating = top_event_row[1] if top_event_row else 0
+
 
     conn.close()
     
