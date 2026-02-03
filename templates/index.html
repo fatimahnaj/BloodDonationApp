@@ -31,8 +31,8 @@
             <input type="password" name="password" placeholder="password">
             <button type="submit" id="login">Log in</button>
             <a href="{{url_for('forgot_pass')}}">forgot password?</a>
-            <hr>
-              <button type="button" id="create_acc" onclick="window.location.href='{{url_for('register')}}'">Create new account</button>
+            <a href="{{ url_for('register') }}" style="text-decoration: none; width: 100%; display: flex; justify-content: center;">
+            <button type="button" id="create_acc">Create new account</button></a>
         </form>
     </div>
 </body>

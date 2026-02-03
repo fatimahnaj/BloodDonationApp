@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Blood | Dashboard</title>
+    <title>Blood Donation | Dashboard</title>
 
 </head>
 {# flash messages,pop-up alerts notification sent from app.py (example: "Booking Successful!") #}
@@ -25,7 +25,7 @@
 <body>
     <div class="navbar">
         <div class="navbar-header">
-            <img src="/static/logo-heart.png" class="logo-img"><a href="donor-dashboard.html">Blood | Dashboard</a>
+            <img src="/static/logo-heart.png" class="logo-img"><a>Blood Donation | Dashboard</a>
         </div>
         <div class="right-nav">
             <h1>User: {{ session['username'] }}</h1>
@@ -43,7 +43,7 @@
     </div>
 
     <div class="hero">
-        <h1>Blood donation event</h1>
+        <h1>Blood Donation Event</h1>
         <p>Locate the nearest event and start becoming part of the community</p>
         <a href="#events" class="hero-btn">View events</a>
     </div>
@@ -64,14 +64,17 @@
             </div>
     
             <div class="card-bottom">
+            {# Check if the user has already booked this specific event #}
+            {% if event.eventID in booked_ids %}
+                <a href="{{ url_for('feedback', event_id=event.eventID) }}" class="btn-feedback">Give Feedback</a>
             {# booking and feedback logic, Shows "Book Appointment" if there is still slots, otherwise shows "Give Feedback" #}
-            {% if event.availableSlots > 0 %}
+            {% elif event.availableSlots > 0 %}
                 <form method="POST" action="{{ url_for('book_event', eventID=event.eventID) }}">
-                <button type="submit" class="btn-book">Book appointment</button>
+                    <button type="submit" class="btn-book">Book appointment</button>
                 </form>
-                {% else %}
-                    <a href="{{ url_for('feedback', event_id=event.eventID) }}">Give Feedback</a>
-                {% endif %}
+            {% else %}
+                <button class="btn-book" style="background: gray;" disabled>Full</button>
+            {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -162,6 +165,6 @@ body { margin: 0; background-color: #752f27; scroll-behavior: smooth; }
 .event-card { background: #f4e8e1; width: 320px; border-radius: 20px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; }
 .event-card h2 { color: #752f27; text-align: center; border-bottom: 2px solid #752f27; padding-bottom: 10px; }
 .btn-book { background: #880105; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-.btn-feedback { background: #e8c6bc; color: white; display: block; text-align: center; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: bold; }
+.btn-feedback { background: #d4bea9; color: #752f27; display: block; text-align: center; text-decoration: none; padding: 12px; border-radius: 8px; font-weight: bold; }
 </style>
 </html>

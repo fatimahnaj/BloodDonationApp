@@ -371,9 +371,16 @@ def donor_dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
     
+    user_id = session['ID']
     db = get_db()
     #for view events, ONLY fetch events if 'Approved'by admin
     events = db.execute("SELECT * FROM DonationEvent WHERE status = 'Approved'").fetchall()
+
+    #fetch ID of events this specific user has already booked
+    user_bookings = db.execute("SELECT eventID FROM Appointment WHERE userID = ?", (user_id,)).fetchall()
+
+    #create a simple list of those IDs 
+    booked_event_ids = [str(b['eventID']) for b in user_bookings]
 
     #for view notifications, fetch urgent request by hospital
     notifications = db.execute('''
@@ -382,7 +389,9 @@ def donor_dashboard():
         JOIN Hospital ON UrgentRequest.userID = Hospital.userID
     ''').fetchall()
     db.close()
-    return render_template('donor-dashboard.html', events=events, notifications=notifications)
+
+    #pass the 'booked_event_ids' list to the donor-dashboard.html
+    return render_template('donor-dashboard.html', events=events, notifications=notifications, booked_ids=booked_event_ids)
 
 #donor-profile
 @app.route('/donor-profile', methods=['GET', 'POST'])
@@ -435,9 +444,9 @@ def donor_profile():
     return render_template('donor-profile.html', user=row, notifications=notifications)
 
 #feedback page   
-@app.route('/feedback', methods=['GET', 'POST'])
-def feedback():
-    if 'username' not in session:
+@app.route('/feedback/<event_id>', methods=['GET', 'POST'])
+def feedback(event_id):
+    if 'ID' not in session:
         return redirect(url_for('login'))
 
     db = get_db()
@@ -449,11 +458,18 @@ def feedback():
             rating = request.form.get('rating')
             comment = request.form.get('comment')
 
-            db.execute('''INSERT INTO Feedback (userID, rating, comment) 
-                          VALUES (?, ?, ?, ?, ?)''', 
-                       (user_id, rating, comment))
+            # Generate a simple unique ID for the feedback
+            feedback_id = "FB" + str(uuid.uuid4())[:8]
+
+            db.execute('''INSERT INTO Feedback (feedbackID, userID, eventID, rating, comment) 
+                        VALUES (?, ?, ?, ?, ?)''', 
+                       (feedback_id, user_id, event_id, rating, comment))
             db.commit()
-            flash("Feedback submitted!", "success")
+            flash("Feedback submitted! Thank you!", "success")
+        except Exception as e:
+            checking(f"Feedback Error: {e}")
+            flash("Error submitting feedback.", "error")
+
         finally:
             db.close()
         return redirect(url_for('donor_dashboard'))
@@ -465,6 +481,7 @@ def feedback():
         JOIN Hospital ON UrgentRequest.userID = Hospital.userID
     ''').fetchall()
     db.close()
+
     return render_template('feedback.html', notifications=notifications)
 
 #book appointment button 
@@ -473,7 +490,7 @@ def book_event(eventID):
     if 'username' not in session:
         return redirect(url_for('login'))
     
-    user_id = session['username']
+    user_id = session['ID']
     # Generate a unique appointmentID for booking using current time
     appointment_id = "AP" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -529,8 +546,8 @@ def admin_dashboard():
     top_event_row = conn.execute(''' SELECT de.eventName, AVG(f.rating) AS avg_rating FROM DonationEvent de JOIN Feedback f ON de.eventID = f.eventID
     GROUP BY de.eventID ORDER BY avg_rating DESC LIMIT 1 ''').fetchone()
 
-top_event_name = top_event_row[0] if top_event_row else "N/A"
-top_event_rating = top_event_row[1] if top_event_row else 0
+    top_event_name = top_event_row[0] if top_event_row else "N/A"
+    top_event_rating = top_event_row[1] if top_event_row else 0
 
 
     conn.close()
