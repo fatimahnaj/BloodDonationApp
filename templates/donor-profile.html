@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Blood | Profile</title>
+    <title>Blood | Edit Profile</title>
 </head>
 <body>
     <div class="navbar">
@@ -17,7 +17,7 @@
     </div>
     
     <div class="right-nav">
-        <h1>User: {{ session['username'] }}</h1>
+        <h1>User: {{ session.get['username'] }}</h1>
         
         <div class="notif-wrapper" style="position: relative; display: flex; align-items: center;">
             <i class='bx bxs-bell bell-icon' onclick="toggleNotif()"></i>
@@ -55,6 +55,7 @@
             {# Displays the name, gender, and blood type fetched from the database #}
             <h2 style="margin:0">{{ user.name }}</h2>
             <p>{{ user.gender }} | {{ user.bloodType }}{% if user.rhFactor %}\+{% else %}-{% endif %} </p>
+            {# <p>{{ user.gender }} | {{ user.bloodType }}</p> #}
         </div>
         {# POST method sends the updated input values back to the server when edit is clicked #}
         <form method="POST">

@@ -441,7 +441,7 @@ def feedback():
         return redirect(url_for('login'))
 
     db = get_db()
-    user_id = session['username']  
+    user_id = session.get('ID')
 
     if request.method == 'POST':
         try:

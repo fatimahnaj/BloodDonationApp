@@ -2,7 +2,7 @@ import sqlite3
 
 def build_database():
     try:
-        # Connect to the database (it will create the file if it doesn't exist)
+        # Connect to the database, it will create the file if it is not yet exist
         connection = sqlite3.connect('database.db')
         
         # Open and read the SQL file
@@ -12,7 +12,7 @@ def build_database():
         # Execute the script
         connection.executescript(sql_script)
 
-        #Run the specific Donor Test Data
+        # Test Run the specific Donor Test Data
         test_data = """
         INSERT INTO RegisteredUser VALUES ('D101', 'Test Donor', 'donor@mmu.edu.my', '1234', 'Donor');
         INSERT INTO Donor VALUES ('D101', '012-9998888', 'O+', 1, '1998-05-15', 'Female');
