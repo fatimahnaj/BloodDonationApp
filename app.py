@@ -14,7 +14,7 @@ def checking(output):
 
 #DATABASE
 def get_db():
-    conn = sqlite3.connect("database.db")
+    conn = sqlite3.connect("database.db", timeout=10, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 #=====================PAGES======================
@@ -280,26 +280,25 @@ def update_inventory():
 
     if request.method == 'POST':
         try:
-            db = get_db_connection()
+            db = get_db()
 
-            user_id = session.get('username', 'HOSP01')
+            user_id = session.get('ID')
 
             blood_types = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
 
             for t in blood_types:
                 qty = request.form.get(t.replace("+", "_pos").replace("-", "_neg"))
 
-                if qty is None or qty == "":
-                    qty = 0
+                if qty is not None and qty != "":
 
-                inventory_id = f"INV_{user_id}_{t}"
+                    inventory_id = f"INV_{user_id}_{t}"
 
-                db.execute("""
-                    INSERT INTO BloodInventory (inventoryID, userID, bloodType, currentStock)
-                    VALUES (?, ?, ?, ?)
-                    ON CONFLICT(inventoryID)
-                    DO UPDATE SET currentStock=excluded.currentStock
-                """, (inventory_id, user_id, t, qty))
+                    db.execute("""
+                        INSERT INTO BloodInventory (inventoryID, userID, bloodType, currentStock)
+                        VALUES (?, ?, ?, ?)
+                        ON CONFLICT(inventoryID)
+                        DO UPDATE SET currentStock=excluded.currentStock
+                    """, (inventory_id, user_id, t, qty))
 
             db.commit()
             flash("Inventory updated successfully!", "success")
@@ -317,6 +316,10 @@ def update_inventory():
 
 @app.route('/request', methods=['GET','POST'])
 def send_request():
+
+    if "ID" not in session:
+        flash("Please login as hospital first.", "error")
+        return redirect(url_for('login'))
 
     if request.method == 'POST':
 
@@ -338,9 +341,9 @@ def send_request():
         }[urgency]
 
         requestID = "REQ_" + str(uuid.uuid4())[:8]
-        hospitalID = session.get("username")
+        hospitalID = session.get("ID")
 
-        conn = get_db_connection()
+        conn = get_db()
 
         conn.execute("""
             INSERT INTO UrgentRequest
