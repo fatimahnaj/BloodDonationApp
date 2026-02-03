@@ -22,6 +22,9 @@ def build_database():
         INSERT INTO RegisteredUser VALUES ('HOSP01', 'Hospital Admin', 'hosp@cyberjaya.my', '1234', 'Hospital');
         INSERT INTO Hospital VALUES ('HOSP01', 'Hospital Cyberjaya');
         INSERT INTO UrgentRequest VALUES ('REQ_99', 'HOSP01', 'O+', 1, 3);
+        INSERT INTO RegisteredUser VALUES ('ADM001', 'Hani', 'iswahani@gmail.com', 'hani05', 'Admin');
+        INSERT INTO Admin VALUES ('ADM001');
+        INSERT INTO DonationEvent VALUES ('EV_1', 'Life Saver Campaign', '2026-03-22', 'Sunway Pyramid Hall', 'Blood donation event occurring in Sunway Pyramid.', 'EO01', 50, 'Pending');
         """
         connection.executescript(test_data)
         

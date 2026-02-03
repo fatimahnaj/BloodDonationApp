@@ -50,6 +50,7 @@ CREATE TABLE Admin (
     FOREIGN KEY (userID) REFERENCES RegisteredUser(userID)
 );
 
+
 CREATE TABLE DonationEvent (
     eventID VARCHAR(20) NOT NULL,
     eventName VARCHAR(100) NOT NULL,
