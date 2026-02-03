@@ -9,16 +9,30 @@
   <title>Blood</title>
 </head>
 <body>
+    <div>
+        <!-- Flash error messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                {% if category == 'error' %}
+                  <div class="flash {{ category }}">{{ message }}</div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+    </div>
     <div class="card">
         <div class="card-body">
-            <form method="post">
+            <form method="POST" action="{{url_for('reg_donor')}}">
               <div class="card-left">
                   <h1>Donor registration</h1>
                   <h2>Part I - Account information</h2>
-                  <input type="text" placeholder="email address"> <br>
-                  <input type="text" placeholder="company name"> <br>
-                  <input type="text" placeholder="password"> <br>
-                  <input type="text" placeholder="contact number"> <br>
+                  <input type="text" placeholder="email address" name="email"> <br>
+                  <input type="text" placeholder="name" name="name"> <br>
+                  <input type="text" placeholder="password" name="password"> <br>
+                  <input type="text" placeholder="contact number" name="contactnum"> <br>
               </div>
       
               <div class="card-right">
@@ -81,6 +95,12 @@ body{
     text-align: center;
     padding: 30px;
     margin: 30px 20px;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 .card-body{
     display: flex;
@@ -166,6 +186,30 @@ input[type="radio"]:focus {
 .card button:hover{
     background-color: #ab9480;
     transition: all 0.475s;
+}
+
+.flash-messages {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+}
+
+.flash {
+    padding: 15px;
+    border-radius: 0.6rem;
+    margin-bottom: 10px;
+    font-weight: 500;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.flash.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }
 </style>
 </html>

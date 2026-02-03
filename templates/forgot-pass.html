@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <title>Blood</title>
+</head>
+<body id="login">
+    <div class="logo">
+      <img src="/static/logo.png" alt="Logo" />
+      <h3>A central for blood donation.</h3>
+    </div>
+    <div class="login-card">
+        <!-- Flash error messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                {% if category == 'error' %}
+                  <div class="flash {{ category }}">{{ message }}</div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{url_for('forgot_pass')}}"class="login-form">
+            <h1>uh oh..! forgot password?</h1>
+            <input type="text" name="email" placeholder="email address">
+            <p>enter your linked email address and we’ll send an email for you to retrieve the account.</p>
+            <button type="submit" id="login">send</button>
+        </form>
+    </div>
+</body>
+
+<style>
+*{
+    box-sizing: border-box;
+    font-family: 'Poppins';
+}
+
+html, body, .wrapper{
+    height: 100%;
+}
+
+body{
+    margin: 0;
+    background-color: #752f27;
+}
+
+body#login{
+    display: flex;
+    flex-direction: row;
+    place-items: center;
+    margin: 0;
+    padding: 0 24px;
+}
+
+.logo{
+    padding: 0 200px;
+}
+
+.logo > h3{
+    color: #fff;
+    padding-left: 90px;
+}
+
+.flash-messages {
+    margin-bottom: 15px;
+  }
+
+.flash {
+    padding: 10px 16px;
+    border-radius: 10px;
+    display: inline-block;
+    font-size: 15px;
+    font-weight: 500;
+    background-color: #ffe6e6;
+    color: #b30000;
+    border: 1px solid #ff9999;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.login-card{
+    position: relative;
+    z-index: 3;
+    width: 380px;
+    margin: 0 20px;
+    padding: 25px 30px 44px;
+    border-radius: 1.25rem;
+    background: #fff;
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.login-form{
+    width: 100%;
+    margin: 0;
+    display: grid;
+    gap: 16px;
+}
+
+.login-form > input{
+    width: 100%;
+    height: 50px;
+    border: 2px solid #ebebeb;
+    font-size: 15px;
+    padding: 0 16px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border-color: #d79f92;
+    transition: all 0.375s;
+}
+
+.login-form > a{
+    color: #d79f92;
+}
+
+.login-form > hr{
+  border: none;
+  height: 1px;
+  background: #ccc;
+  margin: 1px;
+}
+
+.login-form > button{
+    width: 80%;
+    height: 40px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border: none;
+    color: #fff;
+    margin-left: 30px;
+    font-size: large;
+    font-weight: bold;
+}
+h1{
+    color: #8e7762;
+    font-size: 20px;
+}
+p{
+    color:#a08c7c;
+    margin: 0 20px 30px 20px;
+    font-size: 14px;
+}
+
+button{
+    background-color: #880105;
+}
+
+button{
+    background-color: #5f0003;
+    transition: all 0.475s;
+}
+
+</style>
+</html>

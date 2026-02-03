@@ -1,11 +1,22 @@
+DROP TABLE IF EXISTS Appointment;
+DROP TABLE IF EXISTS Feedback;
+DROP TABLE IF EXISTS UrgentRequest;
+DROP TABLE IF EXISTS BloodInventory;
+DROP TABLE IF EXISTS DonationEvent;
+DROP TABLE IF EXISTS Admin;
+DROP TABLE IF EXISTS Hospital;
+DROP TABLE IF EXISTS EventOrganiser;
+DROP TABLE IF EXISTS Donor;
+DROP TABLE IF EXISTS RegisteredUser;
+
 CREATE TABLE RegisteredUser (
     userID VARCHAR(20) NOT NULL,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL, -- Encrypted credentials
     role VARCHAR(15) NOT NULL, -- Donor, EO, Staff, Admin 
     PRIMARY KEY (userID)
-)
+);
 
 CREATE TABLE Donor (
     userID VARCHAR(20) NOT NULL,
@@ -38,6 +49,7 @@ CREATE TABLE Admin (
     PRIMARY KEY (userID),
     FOREIGN KEY (userID) REFERENCES RegisteredUser(userID)
 );
+
 
 CREATE TABLE DonationEvent (
     eventID VARCHAR(20) NOT NULL,
@@ -92,4 +104,3 @@ CREATE TABLE UrgentRequest (
     PRIMARY KEY (requestID),
     FOREIGN KEY (userID) REFERENCES Hospital(userID)
 );
-
