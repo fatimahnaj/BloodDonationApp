@@ -566,7 +566,7 @@ def admin_approval():
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    cur.execute("SELECT * FROM DonationEvent WHERE status='Pending'")
+    cur.execute("SELECT * FROM DonationEvent WHERE status='pending'")
     events = cur.fetchall()
 
     conn.close()
