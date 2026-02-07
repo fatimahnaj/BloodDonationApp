@@ -7,14 +7,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Blood | Event Approval</title>
+    <title>Blood Donation | Event Approval</title>
 </head>
 
 <body>
     <div class="navbar">
         <div class="navbar-header">
             <img src="/static/logo-heart.png" class="logo-img">
-            <a href="{{ url_for('admin_dashboard') }}">Blood | Dashboard</a>
+            <a href="{{ url_for('admin_dashboard') }}">Blood Donation | Dashboard</a>
         </div>
         <div class="right-nav">
             <h1>User: {{ session['username'] }}</h1>
@@ -46,7 +46,7 @@
                 <div class="card-middle">
                     <p><i class='bx bx-map-pin'></i> {{ event.eventLocation }}</p>
                     <p><i class='bx bx-calendar'></i> {{ event.eventDate }}</p>
-                    <p>Remaining slot : {{ event.availableSlots }}/10</p>
+                    <p>Remaining slot : {{ event.availableSlots }}</p>
                 </div>
 
                 <div class="action-btns">
