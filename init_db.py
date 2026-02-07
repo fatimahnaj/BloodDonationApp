@@ -2,7 +2,7 @@ import sqlite3
 
 def build_database():
     try:
-        # Connect to the database (it will create the file if it doesn't exist)
+        # Connect to the database, it will create the file if it is not yet exist
         connection = sqlite3.connect('database.db')
         
         # Open and read the SQL file
@@ -12,7 +12,7 @@ def build_database():
         # Execute the script
         connection.executescript(sql_script)
 
-        #Run the specific Donor Test Data
+        # Test Run the specific Donor Test Data
         test_data = """
         INSERT INTO RegisteredUser VALUES ('D101', 'Test Donor', 'donor@mmu.edu.my', '1234', 'Donor');
         INSERT INTO Donor VALUES ('D101', '012-9998888', 'O+', 1, '1998-05-15', 'Female');
@@ -22,6 +22,9 @@ def build_database():
         INSERT INTO RegisteredUser VALUES ('HOSP01', 'Hospital Admin', 'hosp@cyberjaya.my', '1234', 'Hospital');
         INSERT INTO Hospital VALUES ('HOSP01', 'Hospital Cyberjaya');
         INSERT INTO UrgentRequest VALUES ('REQ_99', 'HOSP01', 'O+', 1, 3);
+        INSERT INTO RegisteredUser VALUES ('ADM001', 'Hani', 'iswahani@gmail.com', 'hani05', 'Admin');
+        INSERT INTO Admin VALUES ('ADM001');
+        INSERT INTO DonationEvent VALUES ('EV_1', 'Life Saver Campaign', '2026-03-22', 'Sunway Pyramid Hall', 'Blood donation event occurring in Sunway Pyramid.', 'EO01', 50, 'Pending');
         """
         connection.executescript(test_data)
         

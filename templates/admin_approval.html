@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Blood Donation | Event Approval</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="navbar-header">
+            <img src="/static/logo-heart.png" class="logo-img">
+            <a href="{{ url_for('admin_dashboard') }}">Blood Donation | Dashboard</a>
+        </div>
+        <div class="right-nav">
+            <h1>User: {{ session['username'] }}</h1>
+            
+            <i class='bx bxs-bell' onclick="toggleNotif()"></i>
+            <div id="notif-box" class="notif-dropdown">
+                <div class="notif-header">Notification</div>
+                {% for n in notifications %}
+                    <div class="notif-item">Urgent request from {{ n.hospitalName }}</div>
+                {% endfor %}
+            </div>
+
+            <a href="#"><i class='bx bx-user-circle' style="color:white"></i></a>
+            <a href="{{ url_for('login') }}"><i class='bx bx-log-out' style="color:white"></i></a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="event-container">
+            {# Iterate through events where status is 'Pending' #}
+            {% for event in events %}
+            <div class="event-card">
+                <div class="card-top">
+                    <h2>{{ event.eventName }}</h2>
+                    <div class="line"></div>
+                    <p class="desc">{{ event.description }}</p>
+                </div>
+
+                <div class="card-middle">
+                    <p><i class='bx bx-map-pin'></i> {{ event.eventLocation }}</p>
+                    <p><i class='bx bx-calendar'></i> {{ event.eventDate }}</p>
+                    <p>Remaining slot : {{ event.availableSlots }}</p>
+                </div>
+
+                <div class="action-btns">
+                    <a href="{{ url_for('update_status', eventID=event.eventID, action='approve') }}" class="btn-approve">approve</a>
+                    <a href="{{ url_for('update_status', eventID=event.eventID, action='reject') }}" class="btn-reject">reject</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function toggleNotif() {
+            var box = document.getElementById('notif-box');
+            box.style.display = (box.style.display == 'block') ? 'none' : 'block';
+        }
+    </script>
+</body>
+
+<style>
+
+*{ box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { margin: 0; background-color: #752f27; scroll-behavior: smooth; }
+        
+.navbar {
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    height: 90px;
+    background: #752f27; 
+    display: flex; 
+    justify-content: space-between;
+    align-items: center; 
+    padding: 0 80px; 
+    z-index: 1000;
+}
+
+.navbar-header { display: flex; align-items: center; gap: 15px; }
+.logo-img { height: 50px; }
+.navbar-header a { 
+    color: white; 
+    font-size: 30px;
+    text-decoration: none; 
+    font-weight: 700; 
+}
+
+.right-nav { display: flex; align-items: center; gap: 20px; }
+.right-nav h1 { font-size: 18px; color: white; margin: 0; }
+.right-nav i { font-size: 35px; cursor: pointer; color: white; transition: 0.3s; }
+.right-nav i:hover { color: #d4bea9; }
+
+
+.notif-dropdown { display: none; position: absolute; top: 75px; right: 140px; background: white; width: 300px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 10; }
+.notif-header { padding: 10px; color: #752f27; font-weight: bold; border-bottom: 1px solid #ddd; }
+.notif-item { padding: 10px; color: #555; font-size: 13px; border-bottom: 1px solid #eee; }
+
+
+.main-content { margin-top: 130px; padding: 50px; }
+.event-container { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+
+.event-card { 
+    background: #f4e8e1; 
+    width: 320px; 
+    border-radius: 20px; 
+    padding: 25px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.event-card h2 { color: #752f27; text-align: center; margin: 0; font-size: 22px; }
+.line { border-bottom: 2px solid #752f27; margin: 10px 0; }
+.desc { color: #752f27; font-size: 14px; margin-bottom: 15px; min-height: 45px; }
+
+.card-middle p { font-size: 14px; color: #752f27; margin: 8px 0; }
+.card-middle i { color: #880105; margin-right: 8px; font-size: 18px; }
+
+
+.action-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+
+.btn-approve, .btn-reject {
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: white;
+    transition: 0.3s;
+}
+
+.btn-approve { background-color: #6ea47a; } 
+.btn-reject { background-color: #8b3a3a; } 
+
+.btn-approve:hover { background-color: #5b8f68; opacity: 0.9; }
+.btn-reject:hover { background-color: #742f2f; opacity: 0.9; }
+</style>
+</html>

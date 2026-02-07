@@ -52,6 +52,7 @@ def login():
         if user:
             session['username'] = user['name']
             session['ID'] = user['userID']
+            session['role'] = user['role']
             
             # Role-Based Redirection Logic, send actors to their pages
             if user['role'] == 'Donor':
@@ -60,9 +61,11 @@ def login():
                 return redirect(url_for('event_org'))
             elif user['role'] == 'Hospital':
                 return redirect(url_for('hospital'))
+            elif user['role'] == 'Admin':
+               return redirect(url_for('admin_dashboard'))
             else:
-                # Default fallback (e.g., for Admin)
-                return redirect(url_for('event_org'))
+                flash("Unknown role.", "error")
+                return redirect(url_for('login'))
         else:
             #if user credentials is invalid
             flash("Invalid email or password. Please try again.", "error") #print out error on screen
@@ -255,7 +258,7 @@ def create_event():
         event_id = f"EV_test{new_num}"
         try:
             c.execute("INSERT INTO DonationEvent (eventID,eventName,eventDate,eventLocation,description,userID,availableSlots,status) VALUES (?,?,?,?,?,?,?,?)",
-                      (event_id,eventName,eventDate,location,description,session['ID'],availableSlots,'pending'))
+                      (event_id,eventName,eventDate,location,description,session['ID'],availableSlots,'Pending'))
             conn.commit()
             flash("Event created! Pending admin's approval..","success")
             return redirect(url_for('create_event'))
@@ -386,10 +389,16 @@ def donor_dashboard():
     db = get_db()
     #for view events, ONLY fetch events if 'Approved'by admin
     events = db.execute("SELECT * FROM DonationEvent WHERE status = 'Approved'").fetchall()
-
+    
     donor = db.execute("SELECT bloodType, RhFactor FROM Donor WHERE userID = ?", (user_id,)).fetchone()
     donor_blood = donor['bloodType']
     donor_rh = donor['RhFactor']
+    
+    #fetch ID of events this specific user has already booked
+    user_bookings = db.execute("SELECT eventID FROM Appointment WHERE userID = ?", (user_id,)).fetchall()
+
+    #create a simple list of those IDs 
+    booked_event_ids = [str(b['eventID']) for b in user_bookings]
 
     #for view notifications, fetch urgent request by hospital
     notifications = db.execute('''
@@ -401,7 +410,9 @@ def donor_dashboard():
     ''',(donor_blood, donor_rh)).fetchall()
     
     db.close()
-    return render_template('donor-dashboard.html', events=events, notifications=notifications)
+
+    #pass the 'booked_event_ids' list to the donor-dashboard.html
+    return render_template('donor-dashboard.html', events=events, notifications=notifications, booked_ids=booked_event_ids)
 
 #donor-profile
 @app.route('/donor-profile', methods=['GET', 'POST'])
@@ -454,13 +465,13 @@ def donor_profile():
     return render_template('donor-profile.html', user=row, notifications=notifications)
 
 #feedback page   
-@app.route('/feedback', methods=['GET', 'POST'])
-def feedback():
-    if 'username' not in session:
+@app.route('/feedback/<event_id>', methods=['GET', 'POST'])
+def feedback(event_id):
+    if 'ID' not in session:
         return redirect(url_for('login'))
 
     db = get_db()
-    user_id = session['username']  
+    user_id = session.get('ID')
 
     if request.method == 'POST':
         try:
@@ -468,11 +479,18 @@ def feedback():
             rating = request.form.get('rating')
             comment = request.form.get('comment')
 
-            db.execute('''INSERT INTO Feedback (userID, rating, comment) 
-                          VALUES (?, ?, ?, ?, ?)''', 
-                       (user_id, rating, comment))
+            # Generate a simple unique ID for the feedback
+            feedback_id = "FB" + str(uuid.uuid4())[:8]
+
+            db.execute('''INSERT INTO Feedback (feedbackID, userID, eventID, rating, comment) 
+                        VALUES (?, ?, ?, ?, ?)''', 
+                       (feedback_id, user_id, event_id, rating, comment))
             db.commit()
-            flash("Feedback submitted!", "success")
+            flash("Feedback submitted! Thank you!", "success")
+        except Exception as e:
+            checking(f"Feedback Error: {e}")
+            flash("Error submitting feedback.", "error")
+
         finally:
             db.close()
         return redirect(url_for('donor_dashboard'))
@@ -484,6 +502,7 @@ def feedback():
         JOIN Hospital ON UrgentRequest.userID = Hospital.userID
     ''').fetchall()
     db.close()
+
     return render_template('feedback.html', notifications=notifications)
 
 #book appointment button 
@@ -492,7 +511,7 @@ def book_event(eventID):
     if 'username' not in session:
         return redirect(url_for('login'))
     
-    user_id = session['username']
+    user_id = session['ID']
     # Generate a unique appointmentID for booking using current time
     appointment_id = "AP" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     current_date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -529,7 +548,69 @@ def book_event(eventID):
         db.close()
     return redirect(url_for('donor_dashboard'))
 
+#admin_dahsboard
+@app.route('/admin_dashboard')
+def admin_dashboard():
+    #Verification: Ensure user is an Admin
+    if session.get('role') != 'Admin':
+        return redirect(url_for('login'))
+
+    conn = get_db()
+    
+    # Metric: Total Blood Volume Collected
+    total_vol = conn.execute('SELECT SUM(currentStock) FROM BloodInventory').fetchone()[0] or 0
+    
+    # Metric: Total unique donor participation 
+    donor_count = conn.execute('SELECT COUNT(DISTINCT userID) FROM Appointment').fetchone()[0] or 0
+    
+    # Metric: Identify top-performing event based on ratings 
+    top_event_row = conn.execute(''' SELECT de.eventName, AVG(f.rating) AS avg_rating FROM DonationEvent de JOIN Feedback f ON de.eventID = f.eventID
+    GROUP BY de.eventID ORDER BY avg_rating DESC LIMIT 1 ''').fetchone()
+
+    top_event_name = top_event_row[0] if top_event_row else "N/A"
+    top_event_rating = top_event_row[1] if top_event_row else 0
+
+
+    conn.close()
+    
+    # Render the report interface
+    return render_template('admin_dashboard.html', 
+                           name=session.get('username'),
+                           vol=total_vol, 
+                           donors=donor_count, 
+                           top=top_event_name)
+
+#admin_approval
+@app.route("/admin_approval")
+def admin_approval():
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM DonationEvent WHERE status='Pending'")
+    events = cur.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "admin_approval.html",
+        events=events
+    )
+
+@app.route('/update_status/<eventID>/<action>')
+def update_status(eventID, action):
+
+    new_status = 'Approved' if action == 'approve' else 'Rejected'
+    
+    conn = get_db()
+
+    conn.execute('UPDATE DonationEvent SET status = ? WHERE eventID = ?', (new_status, eventID))
+    conn.commit()
+    conn.close()
+    
+    # Redirect back to the approval list
+    return redirect(url_for('admin_approval'))
+
 #INIT 
 if __name__ == '__main__':
     app.run(debug=True)
-
