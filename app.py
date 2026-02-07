@@ -1,13 +1,27 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash 
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 import sqlite3, os
 import datetime
 import uuid
 
 app = Flask(__name__)
-app.secret_key = 'our_secret_key'
 app.secret_key = 'mmu_blood_donation_key'
 
 #===================FUNCTIONS===================
+#EMAIL CONFIG
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'fatimahnajihah05@gmail.com'
+app.config['MAIL_PASSWORD'] = 'kdtg gpki efah gyal'  # NOT gmail password
+app.config['MAIL_DEFAULT_SENDER'] = 'your_email@gmail.com'
+
+mail = Mail(app)
+
+#TOKEN ----------
+serializer = URLSafeTimedSerializer(app.secret_key)
+
 #use this when want to test result on terminal
 def checking(output):
     print("-> " + output)
@@ -26,34 +40,18 @@ def login():
         email_val = request.form['email'].strip() #request from form,of the name 'username' #strip removes unnecessary space
         password_val = request.form['password'].strip()
 
-        #KIV : setup database for users here
-        # conn = get_db('user.db')
-        # c = conn.cursor()
-        # c.execute("SELECT * FROM user WHERE username=? AND password=?", (username, password))
-        # user = c.fetchone()
         db = get_db()
         #select the 'role' along with other user data
         user = db.execute("SELECT * FROM RegisteredUser WHERE email=? AND password=?", 
                           (email_val, password_val)).fetchone()
         db.close()
 
-        #temporary for testing only
-        #if username == "admin" and password == "1234":
-        #    user = True
-        #else:
-        #   user = False
-
-        #if user:
-        #    session['username'] = username #set current user
-        #    checking(f"Logging in {username}...") #checking
-        #    return redirect(url_for('event_org')) #switch to 'event-org' fx
-
         #if the data is found in the database, we SAVE their ID in the sessions(cookies)
         if user:
             session['username'] = user['name']
             session['ID'] = user['userID']
             session['role'] = user['role']
-            
+
             # Role-Based Redirection Logic, send actors to their pages
             if user['role'] == 'Donor':
                 return redirect(url_for('donor_dashboard'))
@@ -65,7 +63,8 @@ def login():
                return redirect(url_for('admin_dashboard'))
             else:
                 flash("Unknown role.", "error")
-                return redirect(url_for('login'))
+                return redirect(url_for('login'))    
+        
         else:
             #if user credentials is invalid
             flash("Invalid email or password. Please try again.", "error") #print out error on screen
@@ -213,7 +212,54 @@ def reg_eventorg():
 #FORGOT PASSWORD
 @app.route('/forgot-pass', methods=['GET','POST'])
 def forgot_pass():
+    if request.method == 'POST':
+        email = request.form['email'].strip()
+
+        # TEMP: pretend email exists
+        user_exists = True  
+
+        if user_exists:
+            token = serializer.dumps(email, salt='password-reset')
+            reset_link = url_for('reset_password', token=token, _external=True)
+
+            msg = Message("Password Reset Request")
+            msg.body = f"Click the link to reset your password:\n{reset_link}"
+            msg.recipients = [email]
+
+            mail.send(msg)
+
+            flash("Password reset link sent to your email.", "success")
+            return redirect(url_for('login'))
+
+        flash("Email not found.", "error")
     return render_template('forgot-pass.html')
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = serializer.loads(token, salt='password-reset', max_age=3600)
+    except:
+        flash("Invalid or expired link.", "error")
+        return redirect(url_for('forgot_pass'))
+
+    if request.method == 'POST':
+        new_password = request.form['password']
+
+        # UPDATE DATABASE HERE
+        conn = get_db()
+        c = conn.cursor()
+        try:
+            c.execute("UPDATE RegisteredUser SET password = ? WHERE email = ?", (new_password, email))
+            conn.commit()
+            print(f"Password reset for {email}")
+            flash("Password updated successfully.", "success")
+        finally:
+            conn.close()
+
+        return redirect(url_for('login'))
+
+    return render_template('reset-pass.html', token=token)
+
 
 #EVENT ORGANISER
 @app.route('/event-org')

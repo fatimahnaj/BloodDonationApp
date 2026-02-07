@@ -14,14 +14,14 @@
         <div class="navbar">
             <div class="navbar-header">
                     <img src="/static/logo-heart.png" class="logo-img">
-                    <a href="event-org.html">Blood</a>
+                    <a href="event-org.html">Blood Donation | Dashboard</a>
             </div>
     
             <div class="right-navbar">
                 <h1>User: {{ session['username'] }}</h1>
                 <button>
                     <span>
-                        <i class='bx bx-log-out bx-flip-horizontal' style='color:#ffffff'  ></i>
+                        <a href="{{ url_for('login') }}"><i class='bx bx-log-out' style="color:white"></i></a>
                     </span>
                 </button>
             </div>
@@ -68,15 +68,17 @@ body{
     transition: 0.3s;
 }
 
+.navbar-header { display: flex; align-items: center; gap: 15px; }
+
 .navbar-header img{
     height: 50px;
 }
 
 .navbar-header a{
     color:#fff;
-    font-size: 50px;
+    font-size: 30px;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .navbar button{
@@ -86,7 +88,8 @@ body{
 
 .navbar h1{
     color:#fff;
-    margin-top: 15px;
+    font-size: 25px;
+    margin-top: 10px;
 }
 
 .navbar i{

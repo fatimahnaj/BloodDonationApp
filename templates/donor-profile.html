@@ -17,7 +17,7 @@
     </div>
     
     <div class="right-nav">
-        <h1>User: {{ session.get['username'] }}</h1>
+        <h1>User: {{ session['username'] }}</h1>
         
         <div class="notif-wrapper" style="position: relative; display: flex; align-items: center;">
             <i class='bx bxs-bell bell-icon' onclick="toggleNotif()"></i>
@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <a href="{{ url_for('donor_dashboard') }}"><i class='bx bx-user-circle' style="color:white"></i></a>
+        <a href="{{ url_for('donor_profile') }}"><i class='bx bx-user-circle' style="color:white"></i></a>
         <a href="{{ url_for('login') }}"><i class='bx bx-log-out' style="color:white"></i></a>
     </div>
 </div>
@@ -104,7 +104,7 @@ body {
         margin: 0; 
     }
 
-    .navbar {
+.navbar {
     position: fixed; 
     top: 0; 
     width: 100%; 
@@ -118,42 +118,19 @@ body {
 }
 
 
-    .navbar-header a { 
-    color: white !important; 
-            font-size: 35px;
-            text-decoration: none; 
-            font-weight: 700; 
-            font-family: 'Poppins', sans-serif;
-            align-items: center;
-            display: flex;
+.navbar-header { display: flex; align-items: center; gap: 15px; }
+.logo-img { height: 50px; }
+.navbar-header a { 
+    color: white; 
+    font-size: 30px;
+    text-decoration: none; 
+    font-weight: 700; 
 }
 
-.right-nav i { 
-    font-size: 35px !important; 
-    cursor: pointer; 
-    color: white !important;
-    transition: 0.3s;
-    vertical-align: middle;
-    gap: 20px !important;
-}
-
-.right-nav h1 { 
-    font-size: 20px; 
-    font-weight: 700 !important; 
-    color: white !important;
-    margin: 0;
-    align-items: center !important;
-    display: flex !important;
-    gap: 20px !important;
-
-}
-
-.nav-icons { 
-    display: flex; 
-    gap: 100px;
-    flex-direction: row;
-    height: 100%;
-}
+.right-nav { display: flex; align-items: center; gap: 20px; }
+.right-nav h1 { font-size: 18px; color: white; margin: 0; }
+.right-nav i { font-size: 35px; cursor: pointer; color: white; transition: 0.3s; }
+.right-nav i:hover { color: #d4bea9; }
 
 .nav-icons i { 
     font-size: 400px !important;
@@ -179,7 +156,7 @@ body {
         padding: 40px; 
         border-radius: 20px; 
         box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-        margin-top: 140px; /* Pushes card down so navbar doesn't hide it */
+        margin-top: 80px; /* Pushes card down so navbar doesn't hide it */
     }
 
     .header { color: #752f27; text-align: center; margin-bottom: 30px; }

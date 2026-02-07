@@ -26,11 +26,11 @@
             </div>
           {% endif %}
         {% endwith %}
-        <form method="POST" action="{{url_for('forgot_pass')}}"class="login-form">
-            <h1>uh oh..! forgot password?</h1>
-            <input type="email" name="email" placeholder="email address">
-            <p>enter your linked email address and we’ll send an email for you to retrieve the account.</p>
-            <button type="submit" id="login">send</button>
+        <form method="POST" action="{{url_for('reset_password', token=token)}}"class="login-form">
+            <h1>Password reset</h1>
+            <input type="password" name="password" placeholder="New password" required>
+            <p>Enter you new password. Make sure to jot them this time :P </p>
+            <button type="submit">send</button>
         </form>
     </div>
 </body>
