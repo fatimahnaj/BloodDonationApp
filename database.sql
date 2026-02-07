@@ -106,3 +106,15 @@ CREATE TABLE UrgentRequest (
     PRIMARY KEY (requestID),
     FOREIGN KEY (userID) REFERENCES Hospital(userID)
 );
+
+CREATE TABLE IF NOT EXISTS Notifications (
+    notificationID VARCHAR(20) NOT NULL PRIMARY KEY,
+    userID VARCHAR(20) NOT NULL,   -- Donor who will receive this
+    hospitalID VARCHAR(20) NOT NULL,  -- Who sent the request
+    message TEXT NOT NULL,
+    requestID VARCHAR(20) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userID) REFERENCES Donor(userID),
+    FOREIGN KEY (hospitalID) REFERENCES Hospital(userID),
+    FOREIGN KEY (requestID) REFERENCES UrgentRequest(requestID)
+);

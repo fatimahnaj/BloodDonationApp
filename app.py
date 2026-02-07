@@ -351,6 +351,19 @@ def send_request():
             VALUES (?, ?, ?, ?, ?)
         """, (requestID, hospitalID, blood, rhesus, level))
 
+        matching_donors = conn.execute("""
+            SELECT userID FROM Donor
+            WHERE bloodType = ? AND rhFactor = ?
+        """, (blood, bool(rhesus))).fetchall()
+
+        for donor in matching_donors:
+            notificationID = "NOTIF_" + str(uuid.uuid4())[:8]
+            message = f"Urgent blood request: {blood}{'+' if rhesus else '-'}"
+            conn.execute("""
+                INSERT INTO Notifications (notificationID, userID, hospitalID, message, requestID)
+                VALUES (?, ?, ?, ?, ?)
+            """, (notificationID, donor['userID'], hospitalID, message, requestID))
+
         conn.commit()
         conn.close()
 
@@ -368,16 +381,25 @@ def donor_dashboard():
     if 'username' not in session:
         return redirect(url_for('login'))
     
+    user_id = session['ID']
+    
     db = get_db()
     #for view events, ONLY fetch events if 'Approved'by admin
     events = db.execute("SELECT * FROM DonationEvent WHERE status = 'Approved'").fetchall()
 
+    donor = db.execute("SELECT bloodType, RhFactor FROM Donor WHERE userID = ?", (user_id,)).fetchone()
+    donor_blood = donor['bloodType']
+    donor_rh = donor['RhFactor']
+
     #for view notifications, fetch urgent request by hospital
     notifications = db.execute('''
-        SELECT Hospital.hospitalName, UrgentRequest.requiredBloodType 
+        SELECT Hospital.hospitalName, UrgentRequest.requiredBloodType, UrgentRequest.urgencyLevel
         FROM UrgentRequest 
         JOIN Hospital ON UrgentRequest.userID = Hospital.userID
-    ''').fetchall()
+        WHERE UrgentRequest.requiredBloodType = ? AND UrgentRequest.RhesusFactor = ?
+        ORDER BY UrgentRequest.urgencyLevel DESC, UrgentRequest.requestID DESC
+    ''',(donor_blood, donor_rh)).fetchall()
+    
     db.close()
     return render_template('donor-dashboard.html', events=events, notifications=notifications)
 
