@@ -258,7 +258,7 @@ def create_event():
         event_id = f"EV_test{new_num}"
         try:
             c.execute("INSERT INTO DonationEvent (eventID,eventName,eventDate,eventLocation,description,userID,availableSlots,status) VALUES (?,?,?,?,?,?,?,?)",
-                      (event_id,eventName,eventDate,location,description,session['ID'],availableSlots,'pending'))
+                      (event_id,eventName,eventDate,location,description,session['ID'],availableSlots,'Pending'))
             conn.commit()
             flash("Event created! Pending admin's approval..","success")
             return redirect(url_for('create_event'))
@@ -566,7 +566,7 @@ def admin_approval():
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    cur.execute("SELECT * FROM DonationEvent WHERE status='pending'")
+    cur.execute("SELECT * FROM DonationEvent WHERE status='Pending'")
     events = cur.fetchall()
 
     conn.close()
