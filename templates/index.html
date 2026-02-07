@@ -30,9 +30,10 @@
             <input type="text" name="email" placeholder="email address">
             <input type="password" name="password" placeholder="password">
             <button type="submit" id="login">Log in</button>
-            <a href="{{url_for('forgot_pass')}}">forgot password?</a>
-            <a href="{{ url_for('register') }}" style="text-decoration: none; width: 100%; display: flex; justify-content: center;">
-            <button type="button" id="create_acc">Create new account</button></a>
+            <a href="{{url_for('forgot_pass')}}">forgot password?</a><hr>
+            <a href="{{ url_for('register') }}">
+                <button type="button" id="create_acc">Create new account</button>
+            </a>
         </form>
     </div>
 </body>
@@ -150,6 +151,14 @@ button#login{
 
 button#create_acc{
     background-color: #d4bea9;
+    width: 80%;
+    height: 40px;
+    border-radius: 0.6rem;
+    border-width: 1.15px;
+    border: none;
+    color: #fff;
+    font-size: large;
+    font-weight: bold;
 
 }
 
