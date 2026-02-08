@@ -174,12 +174,12 @@ def reg_eventorg():
          if c.fetchone():
             conn.close()
             flash("❌ Email already exists. Please choose another.", "error")
-            return redirect(url_for('reg_donor'))
+            return redirect(url_for('reg_eventorg'))
 
          try:
             # Generate new userID with format D### (D101, D102, etc.)
             # Use numeric MAX on the numeric suffix to avoid lexicographic ordering and mixed prefixes
-            c.execute("SELECT MAX(CAST(SUBSTR(userID, 2) AS INTEGER)) FROM RegisteredUser WHERE userID LIKE 'EO%'")
+            c.execute("SELECT MAX(CAST(SUBSTR(userID, 3) AS INTEGER)) FROM RegisteredUser WHERE userID LIKE 'EO%'")
             row = c.fetchone()
             max_num = row[0] if row else None
 
@@ -215,8 +215,12 @@ def forgot_pass():
     if request.method == 'POST':
         email = request.form['email'].strip()
 
-        # TEMP: pretend email exists
-        user_exists = True  
+        conn = get_db()
+        #check whether email exist in database
+        try:
+            user_exists = conn.execute("SELECT 1 FROM RegisteredUser WHERE email = ?",(email,)).fetchone()
+        finally:
+            conn.close()
 
         if user_exists:
             token = serializer.dumps(email, salt='password-reset')
@@ -231,7 +235,7 @@ def forgot_pass():
             flash("Password reset link sent to your email.", "success")
             return redirect(url_for('login'))
 
-        flash("Email not found.", "error")
+        flash("Email is not registered.", "error")
     return render_template('forgot-pass.html')
 
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
